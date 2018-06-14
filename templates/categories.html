@@ -1,3 +1,10 @@
-{% for i in categories %}
-  <p> {{ i.name }} </p>
+<a href='{{ url_for('addCategory') }}'>Add New Category</a>
+<hr>
+{% for category in categories %}
+  <p> {{ category.name }} </p>
+  <a href='{{ url_for('showItemList', category_id = category.id) }}'>View</a>
+  <br>
+  <a href='{{ url_for('editCategory', category_id = category.id) }}'>Edit</a>
+  </br>
+  <a href = '{{ url_for('deleteCategory', category_id = category.id) }}'>Delete</a>
 {% endfor %}

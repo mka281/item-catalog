@@ -7,7 +7,8 @@ from database_setup import Base, User, Category, CategoryItem
 app = Flask(__name__)
 
 # Connect to DB
-engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine('sqlite:///itemcatalog.db',
+                       connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 # Create DB session
@@ -61,6 +62,7 @@ def deleteCategory(category_id):
     else:
         return render_template('deleteCategory.html', category=categoryToDelete)
 
+
 # Show all items of a category
 @app.route('/categories/<int:category_id>')
 @app.route('/categories/<int:category_id>/items')
@@ -89,7 +91,8 @@ def addItem(category_id):
 @app.route('/categories/<int:category_id>/items/<int:item_id>')
 def showItem(category_id, item_id):
     item = session.query(CategoryItem).filter_by(id=item_id).one()
-    return render_template('showItem.html', item=item)
+    category = session.query(Category).filter_by(id=category_id).one()
+    return render_template('showItem.html', item=item, category=category)
 
 
 # Edit an existing item
@@ -98,11 +101,13 @@ def showItem(category_id, item_id):
 def editItem(category_id, item_id):
     editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
-        if request.form['name']:
+        if (request.form['name'] and request.form['description']):
             editedItem.name = request.form['name']
+            editedItem.description = request.form['description']
             return redirect(url_for('showItemList', category_id=category_id))
     else:
-        return render_template('editItem.html', item=editedItem)
+        return render_template('editItem.html',
+                               item=editedItem, category_id=category_id)
 
 
 # Delete an item
@@ -115,7 +120,9 @@ def deleteItem(category_id, item_id):
         session.commit()
         return redirect(url_for('showItemList', category_id=category_id))
     else:
-        return render_template('deleteItem.html', item=itemToDelete)
+        return render_template('deleteItem.html',
+                               item=itemToDelete, category_id=category_id)
+
 
 if __name__ == '__main__':
     app.debug = True

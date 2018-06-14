@@ -1,5 +1,17 @@
 Items of {{ category.name }}
-{% for i in items %}
-  <p>Name: {{ i.name }} </p>
-  <p>Description: {{ i.description }} </p>
+<hr>
+<a href='{{ url_for('addItem', category_id=category.id) }}'>Add New Item</a>
+<hr>
+{% for item in items %}
+  <p>Name: {{ item.name }} </p>
+  <p>Description: {{ item.description }} </p>
+  <a href='{{ url_for('showItem', item_id = item.id, category_id = category.id) }}'>View</a>
+  <br>
+  <a href='{{ url_for('editItem', item_id = item.id, category_id = category.id) }}'>Edit</a>
+  </br>
+  <a href = '{{ url_for('deleteItem', item_id = item.id, category_id = category.id) }}'>Delete</a>
+
 {% endfor %}
+
+<hr>
+<a href='{{ url_for('showCategories') }}'>Back</a>
