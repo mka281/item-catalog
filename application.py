@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, CategoryItem
@@ -34,6 +34,7 @@ def addCategory():
         newCategory = Category(name=request.form['name'])
         session.add(newCategory)
         session.commit()
+        flash('New Category Created')
         return redirect(url_for('showCategories'))
     else:
         return render_template('newCategory.html')
@@ -46,6 +47,7 @@ def editCategory(category_id):
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
+            flash('Category successfully edited')
             return redirect(url_for('showCategories'))
     else:
         return render_template('editCategory.html', category=editedCategory)
@@ -58,6 +60,7 @@ def deleteCategory(category_id):
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
+        flash('Category successfully deleted')
         return redirect(url_for('showCategories'))
     else:
         return render_template('deleteCategory.html', category=categoryToDelete)
@@ -82,6 +85,7 @@ def addItem(category_id):
                                category_id=category_id)
         session.add(newItem)
         session.commit()
+        flash('New item created')
         return redirect(url_for('showItems', restaurant_id=restaurant_id))
     else:
         return render_template('newItem.html', category=category)
@@ -104,6 +108,7 @@ def editItem(category_id, item_id):
         if (request.form['name'] and request.form['description']):
             editedItem.name = request.form['name']
             editedItem.description = request.form['description']
+            flash('Item successfully edited')
             return redirect(url_for('showItemList', category_id=category_id))
     else:
         return render_template('editItem.html',
@@ -118,6 +123,7 @@ def deleteItem(category_id, item_id):
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
+        flash('Item successfully deleted')
         return redirect(url_for('showItemList', category_id=category_id))
     else:
         return render_template('deleteItem.html',
@@ -125,5 +131,6 @@ def deleteItem(category_id, item_id):
 
 
 if __name__ == '__main__':
+    app.secret_key = 'secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

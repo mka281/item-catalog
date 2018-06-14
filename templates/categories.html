@@ -1,5 +1,16 @@
 <a href='{{ url_for('addCategory') }}'>Add New Category</a>
 <hr>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<ul>
+{% for message in messages %}
+  <li><strong>{{message}}</strong></li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<hr>
 {% for category in categories %}
   <p> {{ category.name }} </p>
   <a href='{{ url_for('showItemList', category_id = category.id) }}'>View</a>

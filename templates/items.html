@@ -2,6 +2,18 @@ Items of {{ category.name }}
 <hr>
 <a href='{{ url_for('addItem', category_id=category.id) }}'>Add New Item</a>
 <hr>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+{% for message in messages %}
+  <li><strong>{{message}}</strong></li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<hr>
+
 {% for item in items %}
   <p>Name: {{ item.name }} </p>
   <p>Description: {{ item.description }} </p>
@@ -10,7 +22,6 @@ Items of {{ category.name }}
   <a href='{{ url_for('editItem', item_id = item.id, category_id = category.id) }}'>Edit</a>
   </br>
   <a href = '{{ url_for('deleteItem', item_id = item.id, category_id = category.id) }}'>Delete</a>
-
 {% endfor %}
 
 <hr>
