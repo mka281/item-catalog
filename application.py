@@ -1,9 +1,15 @@
+# imports for CRUD app
 from flask import Flask, request, render_template, redirect, url_for, flash
+# imports for anti-forgery state token
+from flask import session as login_session
+import random
+import string
+# imports for database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, CategoryItem
 
-
+# Instantiate flask app
 app = Flask(__name__)
 
 # Connect to DB
@@ -15,10 +21,18 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-
 # ------------ #
 # -- Routes -- #
 # ------------ #
+# Create anti-forgery state token
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
+    login_session['state'] = state
+    return "The current session state is %s" % login_session['state']
+
+
 # Show all categories - Home page
 @app.route('/')
 @app.route('/categories/')
