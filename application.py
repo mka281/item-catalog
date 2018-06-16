@@ -15,6 +15,9 @@ import httplib2
 import json
 from flask import make_response
 import requests
+# import for JSON Endpoints
+from flask import jsonify
+
 
 # Instantiate flask app
 app = Flask(__name__)
@@ -60,6 +63,29 @@ def getUserID(email):
 # ------------ #
 # -- Routes -- #
 # ------------ #
+
+# -- JSON Endpoints -- #
+# -------------------- #
+@app.route('/categories/JSON')
+def categoriesJSON():
+    categories = session.query(Category).all()
+    return jsonify(categories=[c.serialize for c in categories])
+
+
+@app.route('/categories/<int:category_id>/items/JSON')
+def itemsJSON(category_id):
+    items = session.query(CategoryItem).filter_by(category_id=category_id)
+    return jsonify(categoryItems=[i.serialize for i in items])
+
+
+@app.route('/categories/<int:category_id>/items/<int:item_id>/JSON')
+def itemJSON(category_id, item_id):
+    item = session.query(CategoryItem).filter_by(id=item_id).one()
+    return jsonify(item=item.serialize)
+
+
+# -- Auth Routes -- #
+# ----------------- #
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
@@ -190,7 +216,8 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
+# -- Flask App Routes -- #
+# ---------------------- #
 # Show all categories - Home page
 @app.route('/')
 @app.route('/categories/')
