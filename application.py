@@ -168,9 +168,9 @@ def gdisconnect():
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    print('In gdisconnect access token is %s', access_token)
-    print('User name is: ')
-    print(login_session['username'])
+    # print('In gdisconnect access token is %s', access_token)
+    # print('User name is: ')
+    # print(login_session['username'])
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -196,7 +196,10 @@ def gdisconnect():
 @app.route('/categories/')
 def showCategories():
     categories = session.query(Category).all()
-    return render_template('categories.html', categories=categories)
+    if 'username' not in login_session:
+        return render_template('publicCategories.html', categories=categories)
+    else:
+        return render_template('categories.html', categories=categories)
 
 
 # Add a category
@@ -244,7 +247,10 @@ def deleteCategory(category_id):
 def showItemList(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(CategoryItem).filter_by(category_id=category_id).all()
-    return render_template('items.html', category=category, items=items)
+    if 'username' not in login_session:
+        return render_template('publicItems.html', category=category, items=items)
+    else:
+        return render_template('items.html', category=category, items=items)
 
 
 # Add item to category

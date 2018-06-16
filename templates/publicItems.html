@@ -1,0 +1,10 @@
+Items of {{ category.name }}
+<hr>
+{% for item in items %}
+  <p>Name: {{ item.name }} </p>
+  <p>Description: {{ item.description }} </p>
+  <a href='{{ url_for('showItem', item_id = item.id, category_id = category.id) }}'>View</a>
+{% endfor %}
+
+<hr>
+<a href='{{ url_for('showCategories') }}'>Back</a>
