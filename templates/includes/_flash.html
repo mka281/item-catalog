@@ -1,0 +1,10 @@
+<!-- Flash message from flask -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success" role="alert">
+        <strong>{{message}}</strong>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
