@@ -223,10 +223,11 @@ def gdisconnect():
 @app.route('/categories/')
 def showCategories():
     categories = session.query(Category).all()
+    items = session.query(CategoryItem).limit(6).all()
     if 'username' not in login_session:
         return render_template('publicCategories.html', categories=categories)
     else:
-        return render_template('categories.html', categories=categories)
+        return render_template('categories.html', categories=categories, items=items)
 
 
 # Add a category
