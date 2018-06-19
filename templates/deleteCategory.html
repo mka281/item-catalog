@@ -1,8 +1,14 @@
-Delete {{ category.name }}
-<hr>
-<form action="{{url_for('deleteCategory', category_id=category.id)}}"
-      method="POST">
-  <p>Are you sure?</p>
-  <input type="submit" name="delete" value="Delete">
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Delete {{ category.name }}</h2>
+<form class="my-4 px-2" action="{{url_for('deleteCategory', category_id=category.id)}}" method="POST">
+  <div class="form-row">
+    <p>Do you want to delete <strong>{{ category.name }}</strong> permanently?
+  </div>
+  <button type="submit" class="btn btn-danger">Delete</button>
+  <a href='{{url_for('showCategories')}}'>Cancel</a>
 </form>
-<a href='{{url_for('showCategories')}}'>Cancel</a>
+
+{% endblock %}

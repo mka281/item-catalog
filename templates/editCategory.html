@@ -1,10 +1,17 @@
-Edit {{ category.name }}
-<hr>
-<form action="{{ url_for('editCategory', category_id=category.id) }}"
-      method="POST">
-  Category Name:<br>
-  <input type="text" name="name" value="{{ category.name }}">
-  <br>
-  <input type="submit" value="Submit">
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Edit {{ category.name }}</h2>
+<form class="my-4 px-2" action="{{ url_for('editCategory', category_id=category.id) }}" method="POST">
+  <div class="form-row">
+    <div class="col-md-6 form-group">
+      <label for="categoryName">Category Name</label>
+      <input type="text" name="name" class="form-control" id="categoryName" value="{{ category.name }}">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-warning">Save Changes</button>
+  <a href='{{url_for('showCategories')}}'>Cancel</a>
 </form>
-<a href='{{ url_for('showCategories') }}'>Cancel</a>
+
+{% endblock %}

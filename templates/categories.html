@@ -14,7 +14,13 @@
               <a href='{{ url_for('showItemList', category_id = category.id) }}'>
                 {{ category.name }}
               </a>
-              <span class="badge badge-primary badge-pill">14</span>
+              <span class="badge badge-primary badge-pill ml-3">14</span>
+              <a class="ml-auto" href='{{ url_for('editCategory', category_id=category.id) }}'>
+                <button class="btn btn-outline-warning btn-sm" type="button">Edit</button>
+              </a>
+              <a class="ml-1" href='{{ url_for('deleteCategory', category_id=category.id) }}'>
+                <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
+              </a>
             </li>
           {% endfor %}
           </ul>
