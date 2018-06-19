@@ -1,1 +1,21 @@
-Add new item to {{ category.name }}
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Add new item to {{ category.name }}</h2>
+<hr>
+
+<form class="m-3" action="{{ url_for('addItem', category_id=category.id) }}" method="POST">
+    <div class="form-group">
+      <label for="categoryName">Item Name</label>
+      <input type="text" name="name" class="form-control" id="categoryName" placeholder="Item Name">
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <textarea name="description" class="form-control" rows="5" id="description"></textarea>
+    </div>
+  <button type="submit" class="btn btn-success">Create</button>
+  <a href='{{url_for('showItemList', category_id=category.id )}}'>Cancel</a>
+</form>
+
+{% endblock %}

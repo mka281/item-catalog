@@ -1,28 +1,30 @@
-Items of {{ category.name }}
-<hr>
-<a href='{{ url_for('addItem', category_id=category.id) }}'>Add New Item</a>
-<hr>
+{% extends 'layout.html' %}
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul>
-{% for message in messages %}
-  <li><strong>{{message}}</strong></li>
+{% block body %}
+
+  <h2 style="display:inline-block">Items of {{ category.name }}</h2>
+  <a class="float-right mx-2" href='{{ url_for('addItem', category_id=category.id) }}'>
+    <button class="btn btn-outline-success" type="button">Add New Item</button>
+  </a>
+  <hr>
+  <div class="row">
+  {% for item in items %}
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+      <div class="card">
+        <img class="card-img-top" src="http://via.placeholder.com/100x100" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">{{ item.name }}</h5>
+          <p class="card-text">{{ item.description[:55] }}</p>
+          <a href="{{ url_for('showItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-primary btn-sm">View</a>
+          <a href="{{ url_for('editItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-warning btn-sm">Edit</a>
+          <a href="{{ url_for('deleteItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
+          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+        </div>
+      </div>
+    </div>
   {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
-<hr>
+  </div>
+  <hr>
+  <a href="{{ url_for('showCategories') }}">Back</a>
 
-{% for item in items %}
-  <p>Name: {{ item.name }} </p>
-  <p>Description: {{ item.description }} </p>
-  <a href='{{ url_for('showItem', item_id = item.id, category_id = category.id) }}'>View</a>
-  <br>
-  <a href='{{ url_for('editItem', item_id = item.id, category_id = category.id) }}'>Edit</a>
-  </br>
-  <a href = '{{ url_for('deleteItem', item_id = item.id, category_id = category.id) }}'>Delete</a>
-{% endfor %}
-
-<hr>
-<a href='{{ url_for('showCategories') }}'>Back</a>
+{% endblock %}
