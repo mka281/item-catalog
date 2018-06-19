@@ -224,10 +224,7 @@ def gdisconnect():
 def showCategories():
     categories = session.query(Category).all()
     items = session.query(CategoryItem).limit(6).all()
-    if 'username' not in login_session:
-        return render_template('publicCategories.html', categories=categories)
-    else:
-        return render_template('categories.html', categories=categories, items=items)
+    return render_template('categories.html', categories=categories, items=items, login_session=login_session)
 
 
 # Add a category
@@ -275,10 +272,7 @@ def deleteCategory(category_id):
 def showItemList(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(CategoryItem).filter_by(category_id=category_id).all()
-    if 'username' not in login_session:
-        return render_template('publicItems.html', category=category, items=items)
-    else:
-        return render_template('items.html', category=category, items=items)
+    return render_template('items.html', category=category, items=items, login_session=login_session)
 
 
 # Add item to category
@@ -302,7 +296,7 @@ def addItem(category_id):
 def showItem(category_id, item_id):
     item = session.query(CategoryItem).filter_by(id=item_id).one()
     category = session.query(Category).filter_by(id=category_id).one()
-    return render_template('showItem.html', item=item, category=category)
+    return render_template('showItem.html', item=item, category=category, login_session=login_session)
 
 
 # Edit an existing item

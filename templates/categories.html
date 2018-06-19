@@ -5,9 +5,12 @@
       <div class="row bg-light my-2 py-3">
         <div class="col-md-4">
           <h2 style="display:inline-block">Categories</h2>
+          {% if 'username' in login_session %}
           <a href='{{ url_for('addCategory') }}'>
-            <button class="btn btn-outline-success float-right mr-3" type="button">Add New</button>
+            <button class="btn btn-outline-success float-right" type="button">Add New</button>
           </a>
+          {% endif %}
+          <hr>
           <ul class="list-group">
           {% for category in categories %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -15,12 +18,14 @@
                 {{ category.name }}
               </a>
               <span class="badge badge-primary badge-pill ml-3">14</span>
+              {% if 'username' in login_session %}
               <a class="ml-auto" href='{{ url_for('editCategory', category_id=category.id) }}'>
                 <button class="btn btn-outline-warning btn-sm" type="button">Edit</button>
               </a>
               <a class="ml-1" href='{{ url_for('deleteCategory', category_id=category.id) }}'>
                 <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
               </a>
+              {% endif %}
             </li>
           {% endfor %}
           </ul>
@@ -28,15 +33,20 @@
 
         <div class="col-md-8">
           <h2>Last Added Items</h2>
+          <hr>
           <div class="row">
           {% for item in items %}
-            <div class="col-md-4 mb-3">
+          <div class="col-lg-4 col-md-6 mb-3">
               <div class="card">
                 <img class="card-img-top" src="http://via.placeholder.com/100x100" alt="Card image cap">
                 <div class="card-body">
                   <h5 class="card-title">{{ item.name }}</h5>
-                  <p class="card-text">{{ "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde tempore natus magnam eligendi ex nobis minus illo harum, eaque deserunt corporis ipsa nemo molestiae autem a repudiandae quo consequuntur laudantium."[:55] }}</p>
-                  <a href="{{ url_for('showItemList', category_id = item.category_id) }}" class="btn btn-outline-primary">View More</a>
+                  <p class="card-text">{{ item.description[:55] }}</p>
+                  <a href="{{ url_for('showItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-primary btn-sm">View</a>
+                  {% if 'username' in login_session %}
+                  <a href="{{ url_for('editItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-warning btn-sm">Edit</a>
+                  <a href="{{ url_for('deleteItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
+                  {% endif %}
                   <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                 </div>
               </div>
@@ -44,6 +54,7 @@
           {% endfor %}
           </div>
         </div>
+
       </div>
 
 {% endblock %}
