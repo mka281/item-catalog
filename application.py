@@ -347,12 +347,15 @@ def editItem(category_id, item_id):
     editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
         if (request.form['name'] and request.form['description']):
-            # Get a secure filename and save the file into img folder
             file = request.files['file']
             if file and allowed_file(file.filename):
+                # Get a secure filename and save the file into img folder
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
+                # Delete previous image from img folder
+                filePath = editedItem.image[4:]
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
+            # Update DB
             editedItem.name = request.form['name']
             editedItem.description = request.form['description']
             editedItem.image = 'img/'+filename
@@ -370,8 +373,13 @@ def editItem(category_id, item_id):
 def deleteItem(category_id, item_id):
     itemToDelete = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
+        # Delete item from DB
         session.delete(itemToDelete)
         session.commit()
+        # Delete item image from img folder
+        filePath = itemToDelete.image[4:]
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
+
         flash('Item successfully deleted')
         return redirect(url_for('showItemList', category_id=category_id))
     else:
