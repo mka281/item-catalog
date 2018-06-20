@@ -17,7 +17,8 @@ from flask import make_response
 import requests
 # import for JSON Endpoints
 from flask import jsonify
-
+# import for login_required decorator
+from functools import wraps
 
 # Instantiate flask app
 app = Flask(__name__)
@@ -58,6 +59,17 @@ def getUserID(email):
         return user.id
     except:
         return None
+
+# Create login_required decorator for add-edit-delete routes
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'username' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first")
+            return redirect(url_for('showLogin'))
+    return wrap
 
 
 # ------------ #
@@ -231,6 +243,7 @@ def showCategories():
 
 # Add a category
 @app.route('/categories/new', methods=['GET', 'POST'])
+@login_required
 def addCategory():
     if request.method == 'POST':
         newCategory = Category(name=request.form['name'])
@@ -244,6 +257,7 @@ def addCategory():
 
 # Edit an existing category
 @app.route('/categories/<int:category_id>/edit', methods=['GET', 'POST'])
+@login_required
 def editCategory(category_id):
     editedCategory = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
@@ -257,6 +271,7 @@ def editCategory(category_id):
 
 # Delete a category
 @app.route('/categories/<int:category_id>/delete', methods=['GET', 'POST'])
+@login_required
 def deleteCategory(category_id):
     categoryToDelete = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
@@ -279,6 +294,7 @@ def showItemList(category_id):
 
 # Add item to category
 @app.route('/categories/<int:category_id>/items/new', methods=['GET', 'POST'])
+@login_required
 def addItem(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
@@ -304,6 +320,7 @@ def showItem(category_id, item_id):
 # Edit an existing item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/edit',
            methods=['GET', 'POST'])
+@login_required
 def editItem(category_id, item_id):
     editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
@@ -320,6 +337,7 @@ def editItem(category_id, item_id):
 # Delete an item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/delete',
            methods=['GET', 'POST'])
+@login_required
 def deleteItem(category_id, item_id):
     itemToDelete = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
