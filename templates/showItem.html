@@ -4,6 +4,9 @@
 
   <h2>Details of {{ item.name }}</h2>
   <hr>
+  <div class="item-image-container">
+    <img class="item-image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }} image">
+  </div>
   <p>{{ item.description }} </p>
   {% if 'username' in login_session %}
   <a href="{{ url_for('editItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-warning btn-sm">Edit</a>
