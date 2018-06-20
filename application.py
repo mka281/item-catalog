@@ -208,13 +208,15 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # response = make_response(json.dumps('Successfully disconnected.'), 200)
+        # response.headers['Content-Type'] = 'application/json'
+        flash('You have successfully disconnected')
+        return redirect(url_for('showCategories'))
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        # response.headers['Content-Type'] = 'application/json'
+        flash('Failed to revoke token for given user.')
+        return redirect(url_for('showCategories'))
 
 # -- Flask App Routes -- #
 # ---------------------- #
@@ -237,7 +239,7 @@ def addCategory():
         flash('New Category Created')
         return redirect(url_for('showCategories'))
     else:
-        return render_template('newCategory.html')
+        return render_template('newCategory.html', login_session=login_session)
 
 
 # Edit an existing category
@@ -250,7 +252,7 @@ def editCategory(category_id):
             flash('Category successfully edited')
             return redirect(url_for('showCategories'))
     else:
-        return render_template('editCategory.html', category=editedCategory)
+        return render_template('editCategory.html', category=editedCategory, login_session=login_session)
 
 
 # Delete a category
@@ -263,7 +265,7 @@ def deleteCategory(category_id):
         flash('Category successfully deleted')
         return redirect(url_for('showCategories'))
     else:
-        return render_template('deleteCategory.html', category=categoryToDelete)
+        return render_template('deleteCategory.html', category=categoryToDelete, login_session=login_session)
 
 
 # Show all items of a category
@@ -288,7 +290,7 @@ def addItem(category_id):
         flash('New item created')
         return redirect(url_for('showItemList', category_id=category.id))
     else:
-        return render_template('newItem.html', category=category)
+        return render_template('newItem.html', category=category, login_session=login_session)
 
 
 # Show details of a specific item
@@ -312,7 +314,7 @@ def editItem(category_id, item_id):
             return redirect(url_for('showItemList', category_id=category_id))
     else:
         return render_template('editItem.html',
-                               item=editedItem, category_id=category_id)
+                               item=editedItem, category_id=category_id, login_session=login_session)
 
 
 # Delete an item
@@ -327,7 +329,7 @@ def deleteItem(category_id, item_id):
         return redirect(url_for('showItemList', category_id=category_id))
     else:
         return render_template('deleteItem.html',
-                               item=itemToDelete, category_id=category_id)
+                               item=itemToDelete, category_id=category_id, login_session=login_session)
 
 
 if __name__ == '__main__':
