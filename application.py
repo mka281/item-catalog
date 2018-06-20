@@ -19,14 +19,23 @@ import requests
 from flask import jsonify
 # import for login_required decorator
 from functools import wraps
+# imports for image upload
+import os
+from werkzeug.utils import secure_filename
 
-# Instantiate flask app
-app = Flask(__name__)
+
+# Variables for image upload
+UPLOAD_FOLDER = './static/img'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 # GConnect configuration
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catalog"
+
+# Instantiate flask app
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Connect to DB
 engine = create_engine('sqlite:///itemcatalog.db',
@@ -60,6 +69,7 @@ def getUserID(email):
     except:
         return None
 
+
 # Create login_required decorator for add-edit-delete routes
 def login_required(f):
     @wraps(f)
@@ -71,6 +81,11 @@ def login_required(f):
             return redirect(url_for('showLogin'))
     return wrap
 
+
+# Helper function for image upload
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # ------------ #
 # -- Routes -- #
@@ -298,8 +313,15 @@ def showItemList(category_id):
 def addItem(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
+        # Get a secure filename and save the file into img folder
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # Save item to DB and redirect
         newItem = CategoryItem(name=request.form['name'],
                                description=request.form['description'],
+                               image=UPLOAD_FOLDER+'/'+filename,
                                category_id=category_id)
         session.add(newItem)
         session.commit()
