@@ -1,0 +1,15 @@
+/* Login Page */
+.signinButtons {
+  margin-top: 15%;
+  text-align: center;
+}
+
+#signinButton {
+  width: 150px;
+  margin: 0 auto;
+}
+
+#result {
+  margin: 0 auto;
+  text-align: center;
+}
