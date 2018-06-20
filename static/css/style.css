@@ -13,3 +13,10 @@
   margin: 0 auto;
   text-align: center;
 }
+
+/* Item page styles */
+.item-image {
+  width: 50%;
+  min-width: 300px;
+  height: auto;
+}

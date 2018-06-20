@@ -321,7 +321,7 @@ def addItem(category_id):
         # Save item to DB and redirect
         newItem = CategoryItem(name=request.form['name'],
                                description=request.form['description'],
-                               image=UPLOAD_FOLDER+'/'+filename,
+                               image='img/'+filename,
                                category_id=category_id)
         session.add(newItem)
         session.commit()
@@ -347,8 +347,15 @@ def editItem(category_id, item_id):
     editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
         if (request.form['name'] and request.form['description']):
+            # Get a secure filename and save the file into img folder
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
             editedItem.name = request.form['name']
             editedItem.description = request.form['description']
+            editedItem.image = 'img/'+filename
             flash('Item successfully edited')
             return redirect(url_for('showItemList', category_id=category_id))
     else:
