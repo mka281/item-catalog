@@ -42,7 +42,7 @@ class CategoryItem(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     description = Column(String(250))
-    image = (Column(String(250)))
+    image = (Column(String(250), default="img/placeholder-image.jpg"))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -55,6 +55,7 @@ class CategoryItem(Base):
             'id': self.id,
             'name': self.name,
             'description': self.description,
+            'image': self.image,
             'category': self.category_id,
             'user': self.user_id
         }
