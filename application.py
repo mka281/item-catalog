@@ -88,19 +88,19 @@ def allowed_file(filename):
 # ---------------------- #
 # --- JSON Endpoints --- #
 # ---------------------- #
-@app.route('/categories/JSON')
+@app.route('/api/v1/categories/JSON')
 def categoriesJSON():
     categories = session.query(Category).all()
     return jsonify(categories=[c.serialize for c in categories])
 
 
-@app.route('/categories/<int:category_id>/items/JSON')
+@app.route('/api/v1//categories/<int:category_id>/items/JSON')
 def itemsJSON(category_id):
     items = session.query(CategoryItem).filter_by(category_id=category_id)
     return jsonify(categoryItems=[i.serialize for i in items])
 
 
-@app.route('/categories/<int:category_id>/items/<int:item_id>/JSON')
+@app.route('/api/v1/categories/<int:category_id>/items/<int:item_id>/JSON')
 def itemJSON(category_id, item_id):
     item = session.query(CategoryItem).filter_by(id=item_id).one()
     return jsonify(item=item.serialize)
