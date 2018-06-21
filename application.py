@@ -1,6 +1,6 @@
-# imports for CRUD app
+# imports for CRUD routes
 from flask import Flask, request, render_template, redirect, url_for, flash
-# imports for anti-forgery state token
+# imports for login and anti-forgery state token
 from flask import session as login_session
 import random
 import string
@@ -24,17 +24,19 @@ import os
 from werkzeug.utils import secure_filename
 
 
-# Variables for image upload
-UPLOAD_FOLDER = './static/img'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+# Flask instance
+app = Flask(__name__)
 
 # GConnect configuration
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catalog"
 
-# Instantiate flask app
-app = Flask(__name__)
+# Variables for image upload
+UPLOAD_FOLDER = './static/img'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+# Configure folder for image uploads
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Connect to DB
@@ -57,20 +59,15 @@ def createUser(login_session):
     return user.id
 
 
-def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
-    return user
-
-
 def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    finally:
+    except:
         return None
 
 
-# Create login_required decorator for add-edit-delete routes
+# Create decorator for add-edit-delete routes
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -88,11 +85,9 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# ------------ #
-# -- Routes -- #
-# ------------ #
-# -- JSON Endpoints -- #
-# -------------------- #
+# ---------------------- #
+# --- JSON Endpoints --- #
+# ---------------------- #
 @app.route('/categories/JSON')
 def categoriesJSON():
     categories = session.query(Category).all()
@@ -111,8 +106,9 @@ def itemJSON(category_id, item_id):
     return jsonify(item=item.serialize)
 
 
-# -- Auth Routes -- #
-# ----------------- #
+# ------------------- #
+# --- Auth Routes --- #
+# ------------------- #
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
@@ -122,7 +118,7 @@ def showLogin():
     return render_template('login.html', STATE=state)
 
 
-# CONNECT
+# Connect with Google
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -213,7 +209,7 @@ def gconnect():
     return output
 
 
-# DISCONNECT - Revoke a current user's token and reset their login_session
+# Disconnect - Revoke a current user's token and reset their login_session
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
@@ -244,8 +240,9 @@ def gdisconnect():
         return redirect(url_for('showCategories'))
 
 
-# -- Flask App Routes -- #
-# ---------------------- #
+# -------------------------------------------- #
+# --- CRUD Routes for Categories and Items --- #
+# -------------------------------------------- #
 # Show all categories - Home page
 @app.route('/')
 @app.route('/categories/')
