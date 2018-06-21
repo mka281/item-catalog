@@ -4,7 +4,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash
 from flask import session as login_session
 import random
 import string
-# imports for database
+# imports for database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, CategoryItem
@@ -66,7 +66,7 @@ def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    finally:
         return None
 
 
@@ -87,10 +87,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 # ------------ #
 # -- Routes -- #
 # ------------ #
-
 # -- JSON Endpoints -- #
 # -------------------- #
 @app.route('/categories/JSON')
@@ -121,7 +121,8 @@ def showLogin():
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
-# CONNECT
+
+# CONNECT
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -174,8 +175,7 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps('User is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -206,8 +206,9 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;'
+    output += '-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    flash("You are now logged in as %s" % login_session['username'])
     print("done!")
     return output
 
@@ -217,14 +218,15 @@ def gconnect():
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
-        print ('Access Token is None')
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        print('Access Token is None')
+        response = make_response(json.dumps('Current user not connected'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     # print('In gdisconnect access token is %s', access_token)
     # print('User name is: ')
     # print(login_session['username'])
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' \
+        % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -235,15 +237,12 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        # response = make_response(json.dumps('Successfully disconnected.'), 200)
-        # response.headers['Content-Type'] = 'application/json'
         flash('You have successfully disconnected')
         return redirect(url_for('showCategories'))
     else:
-        # response = make_response(json.dumps('Failed to revoke token for given user.', 400))
-        # response.headers['Content-Type'] = 'application/json'
         flash('Failed to revoke token for given user.')
         return redirect(url_for('showCategories'))
+
 
 # -- Flask App Routes -- #
 # ---------------------- #
@@ -253,7 +252,8 @@ def gdisconnect():
 def showCategories():
     categories = session.query(Category).all()
     items = session.query(CategoryItem).limit(6).all()
-    return render_template('categories.html', categories=categories, items=items, login_session=login_session)
+    return render_template('categories.html', categories=categories,
+                           items=items, login_session=login_session)
 
 
 # Add a category
@@ -281,7 +281,8 @@ def editCategory(category_id):
             flash('Category successfully edited')
             return redirect(url_for('showCategories'))
     else:
-        return render_template('editCategory.html', category=editedCategory, login_session=login_session)
+        return render_template('editCategory.html', category=editedCategory,
+                               login_session=login_session)
 
 
 # Delete a category
@@ -295,7 +296,9 @@ def deleteCategory(category_id):
         flash('Category successfully deleted')
         return redirect(url_for('showCategories'))
     else:
-        return render_template('deleteCategory.html', category=categoryToDelete, login_session=login_session)
+        return render_template('deleteCategory.html',
+                               category=categoryToDelete,
+                               login_session=login_session)
 
 
 # Show all items of a category
@@ -304,7 +307,8 @@ def deleteCategory(category_id):
 def showItemList(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(CategoryItem).filter_by(category_id=category_id).all()
-    return render_template('items.html', category=category, items=items, login_session=login_session)
+    return render_template('items.html', category=category, items=items,
+                           login_session=login_session)
 
 
 # Add item to category
@@ -328,7 +332,8 @@ def addItem(category_id):
         flash('New item created')
         return redirect(url_for('showItemList', category_id=category.id))
     else:
-        return render_template('newItem.html', category=category, login_session=login_session)
+        return render_template('newItem.html', category=category,
+                               login_session=login_session)
 
 
 # Show details of a specific item
@@ -336,7 +341,8 @@ def addItem(category_id):
 def showItem(category_id, item_id):
     item = session.query(CategoryItem).filter_by(id=item_id).one()
     category = session.query(Category).filter_by(id=category_id).one()
-    return render_template('showItem.html', item=item, category=category, login_session=login_session)
+    return render_template('showItem.html', item=item, category=category,
+                           login_session=login_session)
 
 
 # Edit an existing item
@@ -355,15 +361,15 @@ def editItem(category_id, item_id):
                 # Delete previous image from img folder
                 filePath = editedItem.image[4:]
                 os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
-            # Update DB
+            # Update DB
             editedItem.name = request.form['name']
             editedItem.description = request.form['description']
             editedItem.image = 'img/'+filename
             flash('Item successfully edited')
             return redirect(url_for('showItemList', category_id=category_id))
     else:
-        return render_template('editItem.html',
-                               item=editedItem, category_id=category_id, login_session=login_session)
+        return render_template('editItem.html', category_id=category_id,
+                               item=editedItem, login_session=login_session)
 
 
 # Delete an item
@@ -383,8 +389,8 @@ def deleteItem(category_id, item_id):
         flash('Item successfully deleted')
         return redirect(url_for('showItemList', category_id=category_id))
     else:
-        return render_template('deleteItem.html',
-                               item=itemToDelete, category_id=category_id, login_session=login_session)
+        return render_template('deleteItem.html', category_id=category_id,
+                               item=itemToDelete, login_session=login_session)
 
 
 if __name__ == '__main__':

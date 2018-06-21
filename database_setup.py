@@ -35,6 +35,7 @@ class Category(Base):
             'user': self.user_id
         }
 
+
 class CategoryItem(Base):
     __tablename__ = 'category_item'
 
