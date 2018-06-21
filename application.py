@@ -380,9 +380,10 @@ def deleteItem(category_id, item_id):
         # Delete item from DB
         session.delete(itemToDelete)
         session.commit()
-        # Delete item image from img folder
-        filePath = itemToDelete.image[4:]
-        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
+        # Delete item image from img folder if it is not placeholder iamge
+        if itemToDelete.image != 'img/placeholder-image.jpg':
+            filePath = itemToDelete.image[4:]
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
 
         flash('Item successfully deleted')
         return redirect(url_for('showItemList', category_id=category_id))
