@@ -314,11 +314,15 @@ def showItemList(category_id):
 def addItem(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
-        # Get a secure filename and save the file into img folder
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # Set deafult image name
+        filename = 'placeholder-image.jpg'
+        # Required fileds are name and description
+        if (request.form['name'] and request.form['description']):
+            file = request.files.get('file') # Equal to None if there's no file
+            if file and allowed_file(file.filename):
+                # Get a secure filename and save the file into img folder
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         # Save item to DB and redirect
         newItem = CategoryItem(name=request.form['name'],
                                description=request.form['description'],
@@ -350,19 +354,24 @@ def showItem(category_id, item_id):
 def editItem(category_id, item_id):
     editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
+        # Required fileds are name and description
         if (request.form['name'] and request.form['description']):
-            file = request.files['file']
+            file = request.files.get('file') # Equal to None if there's no file
             if file and allowed_file(file.filename):
                 # Get a secure filename and save the file into img folder
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                # Delete previous image from img folder
-                filePath = editedItem.image[4:]
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
+                # Delete previous image from img folder if not placeholder img
+                if editedItem.image != 'img/placeholder-image.jpg':
+                    filePath = editedItem.image[4:]
+                    os.remove(os.path.join(
+                        app.config['UPLOAD_FOLDER'], filePath))
+                # Update image info on DB
+                editedItem.image = 'img/'+filename
             # Update DB
             editedItem.name = request.form['name']
             editedItem.description = request.form['description']
-            editedItem.image = 'img/'+filename
+            # Return with success message
             flash('Item successfully edited')
             return redirect(url_for('showItemList', category_id=category_id))
     else:
