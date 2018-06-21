@@ -375,6 +375,7 @@ def editItem(category_id, item_id):
            methods=['GET', 'POST'])
 @login_required
 def deleteItem(category_id, item_id):
+    category = session.query(Category).filter_by(id=category_id).one()
     itemToDelete = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
         # Delete item from DB
@@ -384,7 +385,9 @@ def deleteItem(category_id, item_id):
         if itemToDelete.image != 'img/placeholder-image.jpg':
             filePath = itemToDelete.image[4:]
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
-
+        # Decrease total_item of category
+        category.total_item -= 1
+        # Redirect
         flash('Item successfully deleted')
         return redirect(url_for('showItemList', category_id=category_id))
     else:
