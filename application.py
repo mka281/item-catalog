@@ -324,6 +324,7 @@ def addItem(category_id):
                                description=request.form['description'],
                                image='img/'+filename,
                                category_id=category_id)
+        category.total_item += 1
         session.add(newItem)
         session.commit()
         flash('New item created')
