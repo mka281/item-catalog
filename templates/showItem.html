@@ -7,13 +7,14 @@
   <div class="item-image-container">
     <img class="item-image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }} image">
   </div>
+  <small class="text-muted">{{ item.created_date }}</small>
+  <br><br>
   <p>{{ item.description }} </p>
   {% if 'username' in login_session %}
   <a href="{{ url_for('editItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-warning btn-sm">Edit</a>
   <a href="{{ url_for('deleteItem', item_id = item.id, category_id=item.category_id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
   {% endif %}
-
-  <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+  <br><br>
   <a href='{{ url_for('showItemList', category_id=category.id) }}'>Back</a>
 
 {% endblock %}
