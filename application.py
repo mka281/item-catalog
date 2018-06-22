@@ -94,7 +94,7 @@ def categoriesJSON():
     return jsonify(categories=[c.serialize for c in categories])
 
 
-@app.route('/api/v1//categories/<int:category_id>/items/JSON')
+@app.route('/api/v1/categories/<int:category_id>/items/JSON')
 def itemsJSON(category_id):
     items = session.query(CategoryItem).filter_by(category_id=category_id)
     return jsonify(categoryItems=[i.serialize for i in items])

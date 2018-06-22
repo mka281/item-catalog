@@ -33,7 +33,8 @@ class Category(Base):
         return {
             'id': self.id,
             'name': self.name,
-            'user': self.user_id
+            'total_item': self.total_item,
+            'userId': self.user_id
         }
 
 
@@ -44,9 +45,9 @@ class CategoryItem(Base):
     name = Column(String(80), nullable=False)
     description = Column(String(250))
     image = (Column(String(250), default="img/placeholder-image.jpg"))
+    created_date = Column(DateTime(timezone=True), default=func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
-    created_date = Column(DateTime(timezone=True), default=func.now())
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -58,8 +59,9 @@ class CategoryItem(Base):
             'name': self.name,
             'description': self.description,
             'image': self.image,
-            'category': self.category_id,
-            'user': self.user_id
+            'created': self.created_date,
+            'categoryId': self.category_id,
+            'userId': self.user_id
         }
 
 
