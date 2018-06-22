@@ -5,7 +5,7 @@ from flask import session as login_session
 import random
 import string
 # imports for database
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, CategoryItem
 # imports for gconnect
@@ -248,7 +248,8 @@ def gdisconnect():
 @app.route('/categories/')
 def showCategories():
     categories = session.query(Category).all()
-    items = session.query(CategoryItem).order_by("created_date desc").limit(6).all()
+    items = session.query(CategoryItem).order_by(desc('created_date')).all()
+    items = reversed(items[-6:])
     return render_template('categories.html', categories=categories,
                            items=items, login_session=login_session)
 
