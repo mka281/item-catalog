@@ -283,13 +283,16 @@ def editCategory(category_id):
                                login_session=login_session)
 
 
-# Delete a category
+# Delete a category and related items
 @app.route('/categories/<int:category_id>/delete', methods=['GET', 'POST'])
 @login_required
 def deleteCategory(category_id):
     categoryToDelete = session.query(Category).filter_by(id=category_id).one()
+    itemsToDelete = session.query(CategoryItem).filter_by(category_id=category_id).all()
     if request.method == 'POST':
         session.delete(categoryToDelete)
+        for item in itemsToDelete:
+            session.delete(i)
         session.commit()
         flash('Category successfully deleted')
         return redirect(url_for('showCategories'))
@@ -317,9 +320,9 @@ def addItem(category_id):
     if request.method == 'POST':
         # Set deafult image name
         filename = 'placeholder-image.jpg'
-        # Required fileds are name and description
+        # Required fileds are name and description
         if (request.form['name'] and request.form['description']):
-            file = request.files.get('file') # Equal to None if there's no file
+            file = request.files.get('file')  # Equal to None if there's no file
             if file and allowed_file(file.filename):
                 # Get a secure filename and save the file into img folder
                 filename = secure_filename(file.filename)
@@ -355,9 +358,9 @@ def showItem(category_id, item_id):
 def editItem(category_id, item_id):
     editedItem = session.query(CategoryItem).filter_by(id=item_id).one()
     if request.method == 'POST':
-        # Required fileds are name and description
+        # Required fileds are name and description
         if (request.form['name'] and request.form['description']):
-            file = request.files.get('file') # Equal to None if there's no file
+            file = request.files.get('file')  # Equal to None if there's no file
             if file and allowed_file(file.filename):
                 # Get a secure filename and save the file into img folder
                 filename = secure_filename(file.filename)
@@ -372,7 +375,7 @@ def editItem(category_id, item_id):
             # Update DB
             editedItem.name = request.form['name']
             editedItem.description = request.form['description']
-            # Return with success message
+            # Return with success message
             flash('Item successfully edited')
             return redirect(url_for('showItemList', category_id=category_id))
     else:
