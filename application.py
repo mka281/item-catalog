@@ -248,7 +248,7 @@ def gdisconnect():
 @app.route('/categories/')
 def showCategories():
     categories = session.query(Category).all()
-    items = session.query(CategoryItem).limit(6).all()
+    items = session.query(CategoryItem).order_by("created_date desc").limit(6).all()
     return render_template('categories.html', categories=categories,
                            items=items, login_session=login_session)
 
