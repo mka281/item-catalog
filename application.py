@@ -396,7 +396,8 @@ def deleteItem(category_id, item_id):
             filePath = itemToDelete.image[4:]
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filePath))
         # Decrease total_item of category
-        category.total_item -= 1
+        if category.total_item > 0:
+            category.total_item -= 1
         # Redirect
         flash('Item successfully deleted')
         return redirect(url_for('showItemList', category_id=category_id))
