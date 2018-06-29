@@ -43,7 +43,7 @@ class CategoryItem(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
-    description = Column(String(250))
+    description = Column(Text)
     image = (Column(String(250), default="img/placeholder-image.jpg"))
     created_date = Column(DateTime(timezone=True), default=func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
@@ -65,5 +65,5 @@ class CategoryItem(Base):
         }
 
 
-engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine('postgresql://catalog:catalog@localhost/catalog')
 Base.metadata.create_all(engine)

@@ -29,7 +29,7 @@ app = Flask(__name__)
 
 # GConnect configuration
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open('/var/www/catalog/catalog/client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catalog"
 
 # Variables for image upload
@@ -40,8 +40,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Connect to DB
-engine = create_engine('sqlite:///itemcatalog.db',
-                       connect_args={'check_same_thread': False})
+engine = create_engine('postgresql://catalog:catalog@localhost/catalog')
 Base.metadata.bind = engine
 
 # Create DB session
